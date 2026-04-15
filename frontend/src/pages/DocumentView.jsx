@@ -52,7 +52,8 @@ const DocumentView = () => {
         content: `**Generated ${actionType.toUpperCase()}**\n\n${content}` 
       }]);
     } catch (err) {
-      alert("Failed to perform action.");
+      const message = err.response?.data?.message || 'Failed to perform action.';
+      alert(message);
     } finally {
       setActionLoading(false);
     }

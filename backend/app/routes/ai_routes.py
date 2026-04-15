@@ -15,7 +15,10 @@ def chat(current_user_id):
     if not file_id or not question:
         return jsonify({"message": "file_id and question are required"}), 400
     
-    answer = ask_question_on_file(file_id, question)
+    try:
+        answer = ask_question_on_file(file_id, question)
+    except Exception as e:
+        return jsonify({"message": str(e)}), 503
     return jsonify({"answer": answer}), 200
 
 @ai_bp.route('/summary', methods=['POST'])
@@ -27,7 +30,10 @@ def summary(current_user_id):
     if not file_id:
         return jsonify({"message": "file_id is required"}), 400
         
-    summary_text = generate_summary(file_id)
+    try:
+        summary_text = generate_summary(file_id)
+    except Exception as e:
+        return jsonify({"message": str(e)}), 503
     return jsonify({"summary": summary_text}), 200
 
 @ai_bp.route('/mcq', methods=['POST'])
@@ -39,5 +45,8 @@ def mcq(current_user_id):
     if not file_id:
         return jsonify({"message": "file_id is required"}), 400
         
-    mcq_text = generate_mcq(file_id)
+    try:
+        mcq_text = generate_mcq(file_id)
+    except Exception as e:
+        return jsonify({"message": str(e)}), 503
     return jsonify({"mcq": mcq_text}), 200

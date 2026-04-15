@@ -8,6 +8,7 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY', 'default_secret_key')
     MONGO_URI = os.environ.get('MONGO_URI', 'mongodb://localhost:27017/ai_file_assistant')
     NVIDIA_API_KEY = os.environ.get('NVIDIA_API_KEY', '')
+    NVIDIA_CHAT_MODEL = os.environ.get('NVIDIA_CHAT_MODEL', 'meta/llama-3.1-8b-instruct')
     UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
     VECTOR_STORE_DIR = os.path.join(os.getcwd(), 'vector_store')
     

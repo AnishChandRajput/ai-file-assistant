@@ -11,6 +11,10 @@ from app.config import Config
 
 os.environ["NVIDIA_API_KEY"] = Config.NVIDIA_API_KEY
 
+
+def _chat_model():
+    return ChatNVIDIA(model=Config.NVIDIA_CHAT_MODEL)
+
 def extract_text_from_file(filepath):
     ext = filepath.rsplit('.', 1)[1].lower()
     text = ""
@@ -64,8 +68,8 @@ def ask_question_on_file(file_id, question):
     retriever = get_retriever_for_file(file_id)
     if not retriever:
         return "AI features are unavailable. Ensure NVIDIA_API_KEY is set in .env and file is processed."
-    
-    llm = ChatNVIDIA(model="meta/llama3-8b-instruct")
+
+    llm = _chat_model()
     system_prompt = (
         "You are an assistant for question-answering tasks. "
         "Use the following pieces of retrieved context to answer the question. "
@@ -87,7 +91,10 @@ def ask_question_on_file(file_id, question):
         | StrOutputParser()
     )
     
-    result = rag_chain.invoke(question)
+    try:
+        result = rag_chain.invoke(question)
+    except Exception as e:
+        raise RuntimeError(f"AI chat is currently unavailable: {str(e)}") from e
     return result
 
 def generate_summary(file_id):
@@ -98,10 +105,13 @@ def generate_summary(file_id):
     docs = retriever.invoke("What are the main points of this document?")
     context = "\n".join([doc.page_content for doc in docs])
     
-    llm = ChatNVIDIA(model="meta/llama3-8b-instruct")
+    llm = _chat_model()
     prompt = ChatPromptTemplate.from_template("Summarize the following text comprehensively:\n{context}")
     chain = prompt | llm | StrOutputParser()
-    res = chain.invoke({"context": context})
+    try:
+        res = chain.invoke({"context": context})
+    except Exception as e:
+        raise RuntimeError(f"AI summary is currently unavailable: {str(e)}") from e
     return res
 
 def generate_mcq(file_id):
@@ -112,12 +122,15 @@ def generate_mcq(file_id):
     docs = retriever.invoke("Important facts and figures for a test")
     context = "\n".join([doc.page_content for doc in docs])
     
-    llm = ChatNVIDIA(model="meta/llama3-8b-instruct")
+    llm = _chat_model()
     prompt = ChatPromptTemplate.from_template(
         "Generate 3 Multiple Choice Questions (MCQs) based on the following text. "
         "Format as: Q: [Question]\nA) [Opt]\nB) [Opt]\nC) [Opt]\nD) [Opt]\nAnswer: [Ans]\n\n"
         "Text:\n{context}"
     )
     chain = prompt | llm | StrOutputParser()
-    res = chain.invoke({"context": context})
+    try:
+        res = chain.invoke({"context": context})
+    except Exception as e:
+        raise RuntimeError(f"AI MCQ generation is currently unavailable: {str(e)}") from e
     return res

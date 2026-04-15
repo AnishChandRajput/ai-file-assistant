@@ -19,6 +19,7 @@ const Dashboard = () => {
   const [uploading, setUploading] = useState(false);
   const [search, setSearch] = useState('');
   const [loadingFiles, setLoadingFiles] = useState(true);
+  const [pendingDeleteFile, setPendingDeleteFile] = useState(null);
 
   const loadFiles = async () => {
     setLoadingFiles(true);
@@ -51,17 +52,14 @@ const Dashboard = () => {
     }
   };
 
-  const handleDelete = async (e, fileId) => {
-    e.preventDefault(); // Prevent navigating to document view
-    e.stopPropagation();
-    
-    if (!window.confirm("Are you sure you want to delete this file? This will also remove its AI memory.")) return;
-    
+  const handleDelete = async (fileId) => {
     try {
       await deleteFile(fileId);
-      setFiles(files.filter(f => f._id !== fileId));
+      setFiles((prev) => prev.filter((f) => f._id !== fileId));
     } catch (err) {
-      alert("Failed to delete file.");
+      alert(err.response?.data?.message || 'Failed to delete file.');
+    } finally {
+      setPendingDeleteFile(null);
     }
   };
 
@@ -188,17 +186,16 @@ const Dashboard = () => {
       ) : (
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {filteredFiles.map((file) => (
-            <Link
+            <article
               key={file._id}
-              to={`/document/${file._id}`}
-              state={{ file }}
               className="group relative overflow-hidden rounded-2xl border border-cyan-400/15 bg-slate-950/70 p-5 transition duration-300 hover:-translate-y-1 hover:border-cyan-300/35 hover:shadow-[0_0_0_1px_rgba(34,211,238,0.15),0_0_30px_rgba(34,211,238,0.12)]"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-fuchsia-500/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
               <button
-                onClick={(e) => handleDelete(e, file._id)}
-                className="absolute right-4 top-4 z-10 rounded-lg border border-red-400/20 bg-slate-900/80 p-2 text-slate-400 opacity-0 transition hover:text-red-300 group-hover:opacity-100"
+                type="button"
+                onClick={() => setPendingDeleteFile(file)}
+                className="absolute right-4 top-4 z-20 rounded-lg border border-red-400/20 bg-slate-900/80 p-2 text-slate-400 opacity-0 transition hover:text-red-300 group-hover:opacity-100"
                 title="Delete file"
               >
                 <Trash2 className="h-4 w-4" />
@@ -229,13 +226,48 @@ const Dashboard = () => {
                   </div>
                 )}
 
-                <div className="inline-flex items-center gap-2 text-sm font-semibold text-cyan-600 dark:text-cyan-200 transition group-hover:translate-x-1">
+                <Link
+                  to={`/document/${file._id}`}
+                  state={{ file }}
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-cyan-600 dark:text-cyan-200 transition hover:translate-x-1"
+                >
                   Open
                   <ArrowRight className="h-4 w-4" />
-                </div>
+                </Link>
               </div>
-            </Link>
+            </article>
           ))}
+        </div>
+      )}
+
+      {pendingDeleteFile && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/70 px-4">
+          <div className="w-full max-w-md rounded-2xl border border-red-400/20 bg-slate-900 p-6 shadow-[0_0_40px_rgba(2,6,23,0.6)]">
+            <h3 className="text-lg font-bold text-white">Delete this file?</h3>
+            <p className="mt-2 text-sm text-slate-300 break-words">
+              {pendingDeleteFile.original_filename}
+            </p>
+            <p className="mt-3 text-sm text-slate-400">
+              This action will remove the file and its AI memory permanently.
+            </p>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setPendingDeleteFile(null)}
+                className="rounded-xl border border-slate-600 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-slate-500 hover:bg-slate-800"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => handleDelete(pendingDeleteFile._id)}
+                className="rounded-xl border border-red-400/40 bg-red-500/20 px-4 py-2 text-sm font-semibold text-red-200 transition hover:border-red-300 hover:bg-red-500/30"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
