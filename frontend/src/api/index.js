@@ -26,6 +26,8 @@ API.interceptors.response.use(
 
 export const login = (formData) => API.post('/auth/login', formData);
 export const register = (formData) => API.post('/auth/register', formData);
+export const fetchRegisteredUsers = () => API.get('/auth/users');
+export const selectRegisteredUser = (userId) => API.post('/auth/select', { user_id: userId });
 export const uploadFile = (file) => {
     const formData = new FormData();
     formData.append('file', file);

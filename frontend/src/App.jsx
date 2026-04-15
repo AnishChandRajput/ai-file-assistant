@@ -17,14 +17,15 @@ function App() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('name');
+    localStorage.removeItem('userId');
     setToken(null);
   }
 
   return (
     <Router>
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
+      <div className="min-h-screen bg-transparent text-slate-50 transition-colors duration-300">
         <Navbar isAuthenticated={!!token} handleLogout={handleLogout} />
-        <div className="container mx-auto p-4 sm:p-6 lg:p-8">
+        <div className="container mx-auto px-4 pb-8 pt-4 sm:px-6 lg:px-8">
           <Routes>
             <Route path="/login" element={!token ? <Login setToken={handleSetToken} /> : <Navigate to="/dashboard" />} />
             <Route path="/register" element={!token ? <Register /> : <Navigate to="/dashboard" />} />

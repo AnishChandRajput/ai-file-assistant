@@ -3,7 +3,164 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --app-bg: #eef7ff;
+    --app-bg-accent-a: rgba(34, 211, 238, 0.14);
+    --app-bg-accent-b: rgba(168, 85, 247, 0.08);
+    --app-text: #0f172a;
+    --app-text-muted: #475569;
+    --app-surface: rgba(255, 255, 255, 0.82);
+    --app-surface-strong: rgba(255, 255, 255, 0.94);
+    --app-border: rgba(15, 23, 42, 0.08);
+    --app-border-strong: rgba(34, 211, 238, 0.25);
+    --app-shadow: 0 24px 80px rgba(15, 23, 42, 0.12);
+    --app-placeholder: #9ca3af;
+    --app-focus-ring: rgba(34, 211, 238, 0.15);
+    --btn-primary-text: #0e7490;
+    --btn-secondary-text: #0f172a;
+    --btn-ghost-text: #a21caf;
+  }
+
+  html.dark {
+    --app-bg: #020617;
+    --app-bg-accent-a: rgba(34, 211, 238, 0.16);
+    --app-bg-accent-b: rgba(168, 85, 247, 0.12);
+    --app-text: #f8fafc;
+    --app-text-muted: #cbd5e1;
+    --app-surface: rgba(8, 15, 31, 0.82);
+    --app-surface-strong: rgba(15, 23, 42, 0.92);
+    --app-border: rgba(34, 211, 238, 0.14);
+    --app-border-strong: rgba(34, 211, 238, 0.28);
+    --app-shadow: 0 24px 80px rgba(2, 6, 23, 0.45);
+    --app-placeholder: #64748b;
+    --app-focus-ring: rgba(34, 211, 238, 0.15);
+    --btn-primary-text: #cffafe;
+    --btn-secondary-text: #e2e8f0;
+    --btn-ghost-text: #f5d5fe;
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
   body {
-    @apply bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-50 transition-colors duration-200;
+    @apply transition-colors duration-200;
+    background-color: var(--app-bg);
+    color: var(--app-text);
+    background-image:
+      radial-gradient(circle at top left, var(--app-bg-accent-a), transparent 30%),
+      radial-gradient(circle at top right, var(--app-bg-accent-b), transparent 24%),
+      linear-gradient(180deg, var(--app-bg) 0%, color-mix(in srgb, var(--app-bg) 85%, #08111f 15%) 52%, var(--app-bg) 100%);
+    min-height: 100vh;
+  }
+
+  ::selection {
+    background: rgba(34, 211, 238, 0.35);
+    color: white;
+  }
+
+  input,
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@layer components {
+  .neon-panel {
+    @apply rounded-[1.75rem] border p-5 backdrop-blur-xl sm:p-6;
+    border-color: var(--app-border);
+    background: var(--app-surface);
+    color: var(--app-text);
+    box-shadow: var(--app-shadow), 0 0 0 1px rgba(34, 211, 238, 0.06);
+  }
+
+  .dashboard-orb {
+    @apply pointer-events-none absolute -z-10 rounded-full blur-3xl;
+  }
+
+  .dashboard-orb-left {
+    top: 3rem;
+    left: -5rem;
+    height: 18rem;
+    width: 18rem;
+    background: rgba(34, 211, 238, 0.14);
+  }
+
+  .dashboard-orb-right {
+    top: 8rem;
+    right: -5rem;
+    height: 22rem;
+    width: 22rem;
+    background: rgba(217, 70, 239, 0.12);
+  }
+
+  .neon-button {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-semibold tracking-wide transition duration-300;
+  }
+
+  .neon-button-primary {
+    @apply border border-cyan-300/25 bg-cyan-300/15 shadow-[0_0_18px_rgba(34,211,238,0.22)];
+    color: var(--btn-primary-text);
+  }
+
+  .neon-button-primary:hover {
+    @apply -translate-y-0.5 border-cyan-200/40 bg-cyan-300/20 shadow-[0_0_26px_rgba(34,211,238,0.35)];
+  }
+
+  .neon-button-secondary {
+    @apply border;
+    border-color: var(--app-border-strong);
+    background: color-mix(in srgb, var(--app-surface-strong) 72%, #0f172a 28%);
+    box-shadow: 0 0 18px rgba(56, 189, 248, 0.16);
+    color: var(--btn-secondary-text);
+  }
+
+  .neon-button-secondary:hover {
+    @apply -translate-y-0.5;
+    box-shadow: 0 0 24px rgba(56, 189, 248, 0.24);
+  }
+
+  .neon-button-ghost {
+    @apply border border-fuchsia-300/15 bg-fuchsia-300/10 shadow-[0_0_18px_rgba(217,70,239,0.14)];
+    color: var(--btn-ghost-text);
+  }
+
+  .neon-button-ghost:hover {
+    @apply -translate-y-0.5 border-fuchsia-200/30 bg-fuchsia-300/15 shadow-[0_0_24px_rgba(217,70,239,0.22)];
+  }
+
+  .neon-input {
+    @apply w-full rounded-full border py-3.5 pl-12 pr-4 text-sm outline-none transition focus:ring-2;
+    border-color: var(--app-border);
+    background: var(--app-surface);
+    color: var(--app-text);
+    box-shadow: inset 0 0 0 1px rgba(34, 211, 238, 0.04);
+  }
+
+  .neon-input::placeholder {
+    color: var(--app-placeholder);
+  }
+
+  .neon-input:focus {
+    border-color: var(--app-border-strong);
+    box-shadow: inset 0 0 0 1px rgba(34, 211, 238, 0.04), 0 0 0 2px var(--app-focus-ring);
+  }
+
+  .feature-card {
+    @apply rounded-[1.5rem] border p-5 backdrop-blur-xl transition duration-300 hover:-translate-y-1;
+    border-color: var(--app-border);
+    background: var(--app-surface);
+    color: var(--app-text);
+    box-shadow: var(--app-shadow), 0 0 0 1px rgba(34, 211, 238, 0.05);
+  }
+
+  .metric-card {
+    @apply rounded-[1.25rem] border p-4;
+    border-color: var(--app-border);
+    background: color-mix(in srgb, var(--app-surface) 75%, transparent);
+    color: var(--app-text);
+    backdrop-filter: blur(10px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   }
 }
