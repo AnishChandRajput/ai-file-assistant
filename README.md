@@ -46,4 +46,3 @@
 - Click on the document to open the File Detail & Chat View.
 - Ask questions on the right pane, or use the "AI Actions" on the left pane to generate summaries and MCQs.
 
-Enjoy your AI-Powered Document Assistant!
